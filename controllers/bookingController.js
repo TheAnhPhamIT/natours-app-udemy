@@ -57,7 +57,7 @@ const createBookingCheckout = async (session) => {
     try {
         const user = (await User.findOne({ email: session.customer_email })).id;
         const tour = session.client_reference_id;
-        const price = session.display_items[0].amount / 100;
+        const price = session.amount_total / 100;
 
         if (!tour && !user && !price) return;
 
@@ -74,7 +74,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
 
     try {
         event = stripe.webhooks.constructEvent(
-            request.body,
+            req.body,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
         );

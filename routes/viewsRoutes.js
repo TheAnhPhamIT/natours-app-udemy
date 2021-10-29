@@ -19,8 +19,8 @@ router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 // Login
 router.get('/login', authController.isLoggedIn, viewsController.login);
 
-router.get('/me', authController.protect, viewsController.getAccount);
 router.get('/me/my-tours', authController.protect, viewsController.getMyTours);
+router.get('/me', authController.protect, viewsController.getAccount);
 
 router.post(
     '/update-user-data',
