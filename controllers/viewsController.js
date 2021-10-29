@@ -11,6 +11,15 @@ const setCSPRes = (res) => {
     );
 };
 
+exports.alerts = (req, res, next) => {
+    if (req.query.alert === 'booking') {
+        req.locals.alert =
+            "Your booking was successful! Please check your email for a confirmation. If your booking doesn't show up here immediatly, please come back later.";
+    }
+
+    next();
+};
+
 exports.getOverview = catchAsync(async (req, res, next) => {
     // 1) Get tour data from collection
     const tours = await Tour.find();

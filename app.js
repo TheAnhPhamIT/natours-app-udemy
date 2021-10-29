@@ -8,6 +8,8 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewsRouter = require('./routes/viewsRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 
+const bookingController = require('./controllers/bookingController');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errController');
 const rateLimit = require('express-rate-limit');
@@ -16,12 +18,18 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const app = express();
 
 app.enable('trust proxy');
 
 //1) GLOBAL MIDDLEWARES
+// Implement cors
+app.use(cors());
+
+app.options('*', cors());
+
 // Serving static file
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -45,6 +53,13 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
+
+// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+app.post(
+    '/api/v1/bookings/webhook-checkout',
+    express.raw({ type: 'application/json' }),
+    bookingController.webhookCheckout
+);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));

@@ -3,7 +3,7 @@ import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateUserData } from './updateSettings';
 import { bookTour } from './stripe';
-import Tour from '../../models/tourModel';
+import { showAlert } from './alert';
 
 // DOM ELEMENTS
 const mapEle = document.getElementById('map');
@@ -12,6 +12,7 @@ const logoutBtn = document.querySelector('.nav__el.nav__el--logout');
 const formUpdateUser = document.querySelector('.form.form-user-data');
 const formPassword = document.querySelector('.form.form-password');
 const bookTourBtn = document.querySelector('.btn#book-tour-btn');
+const alertMessage = document.querySelector('body').dataset.alert;
 
 // DELEGATION
 if (mapEle) {
@@ -87,3 +88,5 @@ if (bookTourBtn) {
         bookTour(tourId);
     });
 }
+
+if (alertMessage) showAlert(alertMessage, 'success', 20);
