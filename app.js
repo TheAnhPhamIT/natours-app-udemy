@@ -14,10 +14,12 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
-const coockieParser = require('cookie-parser');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const app = express();
+
+app.enable('trust proxy');
 
 //1) GLOBAL MIDDLEWARES
 // Serving static file
@@ -53,6 +55,9 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS attack
 app.use(xss());
+
+// Compression res bodies
+app.use(compression());
 
 // Cookie parser
 app.use(cookieParser());

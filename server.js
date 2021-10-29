@@ -42,3 +42,11 @@ process.on('unhandledRejection', (err) => {
         process.exit(1);
     });
 });
+
+// just only for deploy in Heroku
+process.on('SIGTERM', () => {
+    console.log('SIGTERM RECEIVED! Shutting down gracefully');
+    server.close(() => {
+        close('Sever is terminated');
+    });
+});

@@ -12,15 +12,16 @@ const signToken = (payload) => {
     });
 };
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
     const token = signToken({ id: user._id });
     const cookieOptions = {
         expires: new Date(
             Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
         ),
         httpOnly: true,
+        secure: req.secure || req['x-forwarded-proto'] === 'https',
     };
-    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+    // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
     res.cookie('jwt', token, cookieOptions);
 
@@ -44,15 +45,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
         `${req.protocol}://${req.get('host')}/me`
     ).sendWelcome();
 
-    const token = signToken({ id: newUser._id });
-
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: {
-            user: newUser,
-        },
-    });
+    createSendToken(newUser, 200, req, res);
 });
 
 exports.logIn = catchAsync(async (req, res, next) => {
@@ -72,25 +65,7 @@ exports.logIn = catchAsync(async (req, res, next) => {
     }
 
     // 3) If everything is okay, send token to client
-    const token = signToken({ id: user._id });
-
-    // 4) Optional: Send ACCESS_TOKEN in cookie
-    const cookieOptions = {
-        expires: new Date(
-            Date.now() +
-                +process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true,
-    };
-
-    if (process.env.environment === 'production') cookieOptions.secure = true;
-
-    res.cookie('jwt', token, cookieOptions);
-
-    res.status(200).json({
-        status: 'success',
-        token,
-    });
+    createSendToken(user, 200, req, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -256,12 +231,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     await user.save();
     // 3) update changedPasswordAt property for the user
     // 4) Log the user in and send token back to client
-    const token = signToken({ id: user.id });
-
-    res.status(200).json({
-        status: 'success',
-        token,
-    });
+    createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -283,5 +253,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
     await user.save();
 
-    createSendToken(user, 200, res);
+    createSendToken(user, 200, req, res);
 });
