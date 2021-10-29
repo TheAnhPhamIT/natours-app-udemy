@@ -21,7 +21,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         payment_method_types: ['card'],
         mode: 'payment',
         // success_url: `${DOMAIN}?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
-        success_url: `${DOMAIN}/my-tours?alert=booking`,
+        success_url: `${DOMAIN}/me/my-tours?alert=booking`,
         cancel_url: `${DOMAIN}/tours/${req.params.tourId}`,
         customer_email: req.user.email,
         client_reference_id: req.params.tourId,
@@ -29,7 +29,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
             {
                 name: `${tour.name} Tour`,
                 description: tour.summary,
-                images: [`${DOMAIN}/tours/${tour.imageCover}`],
+                images: [`${DOMAIN}/img/tours/${tour.imageCover}`],
                 amount: tour.price * 100,
                 currency: 'usd',
                 quantity: 1,
